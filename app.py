@@ -31,7 +31,7 @@ with mysql.connector.connect(host=host,user=user,password=password,db=db,port=po
     cursor.execute("create table if not exists signup(username varchar(30) primary key,mobile bigint unique,email varchar(70) unique,address varchar(200),password varchar(40))")
     cursor.execute("create table if not exists additems(itemid varchar(30) primary key,name varchar(30),discription longtext,qty varchar(20),category enum('electronics','grocery','fashion','home'),price varchar(30))")
     cursor.execute("create table if not exists orders(ordid int primary key auto_increment, itemid varchar(30),username varchar(30),name varchar(30),qty varchar(20),total_price int,foreign key (itemid) references additems(itemid),foreign key(username) references signup(username))")
-    cursor.execute("create table if not exists reviews(username varchar(30),itemid varchar(30),title tinytext,review text,rating int,foreign key(username) references signup(username) on update cascade on delete cascade),foreign key(itemid) references additems(itemid) on update cascade on delete cascade,date datetime default now())")   
+    cursor.execute("create table if not exists reviews(username varchar(30) primary key,itemid varchar(30) primary key,title tinytext,review text,rating int,foreign key(username) references signup(username) on update cascade on delete cascade),foreign key(itemid) references additems(itemid) on update cascade on delete cascade,date datetime default now())")   
     cursor.execute("create table if not exists adminsignup(name varchar(30),mobile bigint primary key,email varchar(50) unique,password varchar(40))")
     cursor.execute("create table if not exists contactus(name varchar(30),emailid varchar(40),message tinytext)")  
 Session(app)
