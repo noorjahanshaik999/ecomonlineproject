@@ -494,7 +494,8 @@ def readcontactus():
     cursor.execute("select * from contactus ")
     contact=cursor.fetchall()
     return render_template('readcontactus.html',contact=contact)   
-app.run(debug=True,use_reloader=True)
+if __name__=="__main__":
+    app.run(debug=True,use_reloader=True)
 
 
 
