@@ -33,8 +33,7 @@ with mysql.connector.connect(host=host,user=user,password=password,db=db,port=po
     cursor.execute("create table if not exists adminsignup(name varchar(30),mobile bigint primary key,email varchar(50) unique,password varchar(40))")
     cursor.execute("create table if not exists contactus(name varchar(30),emailid varchar(40),message tinytext)")
     cursor.execute("create table if not exists orders(ordid int primary key auto_increment, itemid varchar(30),username varchar(30),name varchar(30),qty varchar(20),total_price int,foreign key (itemid) references additems(itemid),foreign key(username) references signup(username))")
-    cursor.execute("create table if not exists reviews(username varchar(30),itemid varchar(30),title tinytext,review text,rating int,foreign key(username) references signup(username) on update cascade on delete cascade),foreign key(itemid) references additems(itemid) on update cascade on delete cascade,primary key(username,itemid),date datetime default now())")
-    
+    cursor.execute("create table if not exists reviews(username varchar(30),itemid varchar(30),title tinytext,review text,rating int,foreign key(username) references signup(username) on update cascade on delete cascade),foreign key(itemid) references additems(itemid) on update cascade on delete cascade,primary key(username,itemid),date datetime default now())")   
 Session(app)
 @app.route('/')
 def index():
@@ -172,8 +171,6 @@ def createpassword(token):
         return render_template('newpassword.html')
     except:
         return 'link expired try again'   
-
-'''admin login code'''
 @app.route('/adminsignup',methods=['GET','POST'])
 def adminsignup():
     if request.method=='POST':
@@ -304,8 +301,6 @@ def admincreatepassword(admintoken):
         return render_template('adminnewpassword.html')
     except:
         return 'link expired try again'
-
-    '''''additems '''
 @app.route('/additems',methods=['GET','POST'])
 def additems():
     if session.get('admin'):
@@ -322,7 +317,6 @@ def additems():
             filename=idotp+'.jpg'
             cursor.execute('insert into additems(itemid,name,discription,qty,category,price) values(%s,%s,%s,%s,%s,%s)',[idotp,name,discription,quantity,category,price])
             mydb.commit()
-            
             print(filename)
             path=os.path.dirname(os.path.abspath(__file__))
             static_path=os.path.join(path,'static')
@@ -342,15 +336,12 @@ def homepage(category):
     cursor.execute("select * from additems where category=%s",[category])
     items=cursor.fetchall()
     return render_template('dashboard.html',items=items)
-
 @app.route('/status')
 def status():
     cursor=mydb.cursor(buffered=True)
     cursor.execute('select itemid,name,discription,qty,category,price from additems')
     items=cursor.fetchall()
-
     return render_template('status.html',items=items)
-
 @app.route('/updateproducts/<itemid>',methods=['GET','POST'])
 def updateproducts(itemid):
     if session.get('admin'):
@@ -359,18 +350,15 @@ def updateproducts(itemid):
         items=cursor.fetchone()
         cursor.close()
         if request.method=='POST':
-           
             name=request.form['name']
             discription=request.form['discription']
             quantity=request.form['qty']
             category=request.form['category']
             price=request.form['price']
-
             cursor=mydb.cursor(buffered=True)
             cursor.execute('update additems set name=%s,discription=%s,qty=%s,category=%s,price=%s  where itemid=%s',[name,discription,quantity,category,price,itemid])
             mydb.commit()
             cursor.close()
-           
             return redirect(url_for('adminhome'))
         return render_template('updateproducts.html',items=items)
     else:
@@ -387,11 +375,6 @@ def deleteproducts(itemid):
     os.remove(os.path.join(static_path,filename))
     flash('deleted')
     return redirect(url_for('status'))
-
-
-
-
-
 @app.route('/cart/<itemid>/<name>/<discription>/<category>/<price>')
 def cart(itemid,name,discription,category,price):
     if not session.get('user'):
@@ -401,7 +384,6 @@ def cart(itemid,name,discription,category,price):
         session.modified=True
         flash(f'{name} added to cart')
         return redirect(url_for('homepage',category=category))
-  
     session[session.get('user')][itemid][2]+=1
     flash('Item already in cart')
     return redirect(url_for('homepage',category=category))
@@ -419,15 +401,12 @@ def rem(item):
         session[session.get('user')].pop(item)
         return redirect(url_for('viewcart'))
     return redirect(url_for('login'))
-
 @app.route('/dis/<itemid>')
 def dis(itemid):
     cursor=mydb.cursor(buffered=True)
     cursor.execute("select * from additems where itemid=%s",[itemid])
     items=cursor.fetchone()
     return render_template('discription.html',items=items)
-
-
 @app.route('/orders')
 def orders():
     if session.get('user'):
@@ -435,7 +414,6 @@ def orders():
         cursor.execute('select * from orders where username=%s', (session['user'],))
         orders=cursor.fetchall()
         return render_template('orders.html',orders=orders)
-
 @app.route('/pay/<itemid>/<name>/<int:price>',methods=['POST'])
 def pay(itemid,price,name):
     if session.get('user'):
@@ -469,9 +447,6 @@ def success(itemid,name,q,total):
         mydb.commit()
         return 'Order Placed'
     return redirect(url_for('login'))
-
-
-
 @app.route('/review/<itemid>',methods=['GET','POST'])
 def review(itemid):
     if session.get('user'):
@@ -513,16 +488,12 @@ def contactus():
         cursor.execute('insert into contactus(name,emailid,message) values(%s,%s,%s)',[name,emailid,message])
         mydb.commit()
     return render_template('contactus.html')
-    
-
 @app.route('/readcontactus')
 def readcontactus():
     cursor=mydb.cursor(buffered=True)
     cursor.execute("select * from contactus ")
     contact=cursor.fetchall()
-    return render_template('readcontactus.html',contact=contact)
-       
-    
+    return render_template('readcontactus.html',contact=contact)   
 app.run(debug=True,use_reloader=True)
 
 
