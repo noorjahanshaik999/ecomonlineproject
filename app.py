@@ -28,7 +28,7 @@ mydb=mysql.connector.connect(host=host,user=user,password=password,db=db,port=po
 #mydb=mysql.connector.connect(host='localhost',user='root',password='admin',db='ecommerceproject')
 with mysql.connector.connect(host=host,user=user,password=password,db=db,port=port) as conn:
     cursor=conn.cursor()
-	cursor.execute("create table if not exists signup(username varchar(30) primary key,mobile bigint unique,email varchar(70) unique,address varchar(200),password varchar(40))")
+    cursor.execute("create table if not exists signup(username varchar(30) primary key,mobile bigint unique,email varchar(70) unique,address varchar(200),password varchar(40))")
     cursor.execute("create table if not exists additems(itemid varchar(30) primary key,name varchar(30),discription longtext,qty varchar(20),category enum('electronics','grocery','fashion','home'),price varchar(30))")
     cursor.execute("create table if not exists adminsignup(name varchar(30),mobile bigint primary key,email varchar(50) unique,password varchar(40))")
     cursor.execute("create table if not exists contactus(name varchar(30),emailid varchar(40),message tinytext)")
